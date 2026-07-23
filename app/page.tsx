@@ -23,8 +23,14 @@ export default async function HomePage() {
           Set <code className="text-sprunki-accent2">NEXT_PUBLIC_SUPABASE_URL</code>,{" "}
           <code className="text-sprunki-accent2">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, and{" "}
           <code className="text-sprunki-accent2">ANTHROPIC_API_KEY</code> in your
-          environment (see <code>.env.example</code> and the README), then reload.
+          environment (see <code>.env.example</code> and the README).
         </p>
+        <a
+          href="/setup"
+          className="rounded-full bg-sprunki-accent px-5 py-2.5 font-bold text-white transition hover:brightness-110"
+        >
+          Open the setup checklist →
+        </a>
       </main>
     );
   }

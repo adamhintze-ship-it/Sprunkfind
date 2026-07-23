@@ -9,6 +9,24 @@ Built with **Next.js (App Router)**, **Supabase** (accounts + Postgres), the **A
 
 ---
 
+## 🚀 One-click deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind&env=ANTHROPIC_API_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Anthropic%20API%20key%20%2B%20your%20Supabase%20project%20URL%20and%20anon%20key&envLink=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind%233-configure-environment&project-name=sprunkfind&repository-name=sprunkfind)
+
+The button clones this repo to your Vercel account and prompts for the three
+environment variables. You only need two accounts, both free to start:
+
+1. **Anthropic** → grab an API key at <https://console.anthropic.com/> (powers the finder).
+2. **Supabase** → create a project at <https://supabase.com/> (accounts + database), then copy its **Project URL** and **anon public key** from *Project Settings → API*.
+
+Paste those three values into the Vercel prompt and deploy. Then open
+**`/setup`** on your new site — it shows a live checklist and the one SQL
+snippet to paste into Supabase to finish. That's it.
+
+> Prefer running locally first? Jump to [Run locally](#4-run-locally).
+
+---
+
 ## How it works
 
 ```
@@ -31,11 +49,12 @@ The `ANTHROPIC_API_KEY` lives only on the server (`app/api/find/route.ts`) and i
 
 1. Create a new project at [supabase.com](https://supabase.com).
 2. In the dashboard, open **SQL Editor → New query**, paste the contents of [`supabase/schema.sql`](./supabase/schema.sql), and run it. This creates the `collections` table with Row-Level Security so each user can only read/write their own rows.
-3. (Optional, for Google login) **Authentication → Providers → Google**: enable it and add your Google OAuth **Client ID / Secret** (create them in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)). In Google Cloud, set the **Authorized redirect URI** to:
+   > Tip: after deploying you can just open **`/setup`** on your site and copy the SQL from there — it also shows a live checklist of what's still missing.
+3. **(Optional) Google login.** Email/password works out of the box with **no** extra setup, so you can skip this. To also offer Google: in Supabase go to **Authentication → Providers → Google**, enable it, and add your Google OAuth **Client ID / Secret** (create them in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)) with the **Authorized redirect URI**:
    ```
    https://<your-project-ref>.supabase.co/auth/v1/callback
    ```
-   Email/password login works out of the box with no extra setup.
+   Then set `NEXT_PUBLIC_GOOGLE_ENABLED=true` so the button appears.
 4. In **Project Settings → API**, copy the **Project URL** and the **anon public** key.
 
 ## 3. Configure environment
@@ -52,7 +71,11 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
 # optional — defaults to claude-sonnet-5
 FINDER_MODEL=claude-sonnet-5
+# optional — set to true only after enabling Google in Supabase
+NEXT_PUBLIC_GOOGLE_ENABLED=false
 ```
+
+> Not sure what's configured? Open **`/setup`** in the running app for a live checklist.
 
 ## 4. Run locally
 

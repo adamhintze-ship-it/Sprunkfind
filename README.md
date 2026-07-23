@@ -2,7 +2,7 @@
 
 An AI-powered web app for finding **Sprunki** plush toys (the *Incredibox – Sprunki* fan-mod characters: Wenda, Simon, Oren, Brud, Pinki, and more) from any "phase," and tracking a personal collection that syncs across devices.
 
-- **AI Finder** — describe the plush you want ("Wenda Phase 5 plush") and Claude searches the web (Amazon, Etsy, eBay, dedicated Sprunki stores) and returns real, current buy-links with store, price, character, and phase.
+- **Finder** — type the plush you want ("Wenda Phase 5 plush") and get instant one-tap searches into Etsy, Amazon, eBay, AliExpress, and Google Shopping. **No API key required.** If you add an optional Anthropic key, Claude *also* returns AI-picked exact matches with prices.
 - **Collection** — mark each character as **owned** or **wanted**, saved to your account so it follows you across phone, tablet, and computer.
 
 Built with **Next.js (App Router)**, **Supabase** (accounts + Postgres), the **Anthropic API** (Claude with its server-side web-search tool), and **Tailwind CSS**. Deploys to **Vercel**.
@@ -11,17 +11,20 @@ Built with **Next.js (App Router)**, **Supabase** (accounts + Postgres), the **A
 
 ## 🚀 One-click deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind&env=ANTHROPIC_API_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Anthropic%20API%20key%20%2B%20your%20Supabase%20project%20URL%20and%20anon%20key&envLink=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind%233-configure-environment&project-name=sprunkfind&repository-name=sprunkfind)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Your%20Supabase%20project%20URL%20and%20anon%20key%20(for%20accounts%20%2B%20collection%20sync)&envLink=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind%233-configure-environment&project-name=sprunkfind&repository-name=sprunkfind)
 
-The button clones this repo to your Vercel account and prompts for the three
-environment variables. You only need two accounts, both free to start:
+The button clones this repo to your Vercel account and prompts for just **two**
+values — your Supabase **Project URL** and **anon public key** (from *Project
+Settings → API* after you create a free project at <https://supabase.com/>).
 
-1. **Anthropic** → grab an API key at <https://console.anthropic.com/> (powers the finder).
-2. **Supabase** → create a project at <https://supabase.com/> (accounts + database), then copy its **Project URL** and **anon public key** from *Project Settings → API*.
-
-Paste those three values into the Vercel prompt and deploy. Then open
+The finder works with **no API key** (it opens store searches directly), so
+you don't need an Anthropic account to get started. After deploying, open
 **`/setup`** on your new site — it shows a live checklist and the one SQL
-snippet to paste into Supabase to finish. That's it.
+snippet to paste into Supabase to finish.
+
+> **Optional AI upgrade:** to also get Claude's AI-picked matches, add an
+> `ANTHROPIC_API_KEY` (from <https://console.anthropic.com/>) in Vercel →
+> *Settings → Environment Variables* and redeploy.
 
 > Prefer running locally first? Jump to [Run locally](#4-run-locally).
 

@@ -39,7 +39,9 @@ export async function GET() {
     }
   }
 
-  const ready = anthropic && supabaseConfigured && database === "ok";
+  // The Anthropic key is optional — the finder works via store-search links
+  // without it. "ready" only needs accounts + the database.
+  const ready = supabaseConfigured && database === "ok";
 
   return Response.json({
     ready,

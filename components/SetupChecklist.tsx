@@ -67,9 +67,10 @@ export default function SetupChecklist() {
       <ul className="space-y-2">
         <Item
           ok={!!c?.anthropic}
-          title="Anthropic API key"
-          okText="Configured — the AI finder can search the web."
-          badText="Set ANTHROPIC_API_KEY so the finder can search for plushies."
+          optional
+          title="Anthropic API key (optional)"
+          okText="Configured — AI-picked matches are enabled."
+          badText="Not set — the finder still works via store-search links. Add ANTHROPIC_API_KEY only if you also want AI-picked matches with prices."
         />
         <Item
           ok={!!c?.supabase}

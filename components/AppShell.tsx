@@ -35,8 +35,13 @@ function resultToEntry(result: FinderResult): { key: string; phase: string | nul
   return { key: entryKey(id, variant), phase };
 }
 
-export default function AppShell({ email }: { email: string }) {
-  const supabase = createClient();
+export default function AppShell({
+  email,
+  syncAvailable,
+}: {
+  email: string | null;
+  syncAvailable: boolean;
+}) {
   const { collection, loading, error, setStatus } = useCollection();
 
   const [tab, setTab] = useState<Tab>("finder");
@@ -89,8 +94,8 @@ export default function AppShell({ email }: { email: string }) {
   }
 
   async function signOut() {
-    await supabase.auth.signOut();
-    window.location.assign("/login");
+    await createClient().auth.signOut();
+    window.location.assign("/");
   }
 
   return (
@@ -100,14 +105,25 @@ export default function AppShell({ email }: { email: string }) {
           <h1 className="text-2xl font-extrabold text-sprunki-accent">
             SprunkFind 🧸
           </h1>
-          <p className="text-xs text-white/50">Signed in as {email}</p>
+          <p className="text-xs text-white/50">
+            {email ? `Synced as ${email}` : "Saved on this device"}
+          </p>
         </div>
-        <button
-          onClick={signOut}
-          className="rounded-full bg-white/5 px-4 py-2 text-sm ring-1 ring-white/10 transition hover:bg-white/10"
-        >
-          Sign out
-        </button>
+        {email ? (
+          <button
+            onClick={signOut}
+            className="rounded-full bg-white/5 px-4 py-2 text-sm ring-1 ring-white/10 transition hover:bg-white/10"
+          >
+            Sign out
+          </button>
+        ) : syncAvailable ? (
+          <a
+            href="/login"
+            className="rounded-full bg-white/5 px-4 py-2 text-sm ring-1 ring-white/10 transition hover:bg-white/10"
+          >
+            Sign in to sync
+          </a>
+        ) : null}
       </header>
 
       <div className="mb-6 flex gap-1 rounded-full bg-black/30 p-1 ring-1 ring-white/10">

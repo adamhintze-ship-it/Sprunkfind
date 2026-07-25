@@ -42,17 +42,9 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-  const isPublic =
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/setup");
-
-  if (!user && !isPublic) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  // Sign-in is OPTIONAL: the site works for guests (collection saves on the
+  // device). We only refresh the session here — no redirects, no gating.
+  void user;
 
   return supabaseResponse;
 }

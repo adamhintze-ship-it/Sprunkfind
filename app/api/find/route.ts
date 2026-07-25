@@ -8,6 +8,13 @@ export const maxDuration = 60;
 
 const MODEL = process.env.FINDER_MODEL || "claude-sonnet-5";
 
+// The dynamic-filtering web_search tool (20260209) isn't supported on Haiku;
+// fall back to the basic variant so any documented model works.
+type FinderTool = NonNullable<Anthropic.MessageCreateParams["tools"]>[number];
+const WEB_SEARCH_TOOL: FinderTool = /haiku/i.test(MODEL)
+  ? { type: "web_search_20250305", name: "web_search", max_uses: 5 }
+  : { type: "web_search_20260209", name: "web_search", max_uses: 5 };
+
 interface FinderResult {
   title: string;
   character: string;
@@ -74,7 +81,7 @@ export async function POST(request: Request) {
         model: MODEL,
         max_tokens: 4096,
         system: FINDER_SYSTEM_PROMPT,
-        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
+        tools: [WEB_SEARCH_TOOL],
         messages,
       });
       final = await stream.finalMessage();

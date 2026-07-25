@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useCollection } from "@/hooks/useCollection";
-import { CHARACTERS } from "@/lib/sprunki";
+import { CHARACTERS, entryKey, type Variant } from "@/lib/sprunki";
 import type { FinderResponse, FinderResult } from "@/lib/types";
 import SearchBar from "./SearchBar";
 import ResultCard from "./ResultCard";
@@ -14,12 +14,25 @@ type Tab = "finder" | "collection";
 
 /** Best-effort match of a finder result's character name to a roster id. */
 function matchCharacterId(name: string): string | null {
-  const n = name.toLowerCase();
+  const n = name.toLowerCase().trim();
+  if (!n) return null;
   for (const c of CHARACTERS) {
-    const first = c.name.toLowerCase().split(" ")[0];
-    if (n.includes(first) || first.includes(n)) return c.id;
+    const first = c.name.toLowerCase().split(" ")[0].replace(/[()]/g, "");
+    if (first.length >= 3 && (n.includes(first) || first.includes(n))) return c.id;
   }
   return null;
+}
+
+/** Map a finder result to the character + variant (normal/horror) it best fits. */
+function resultToEntry(result: FinderResult): { key: string; phase: string | null } | null {
+  const id = matchCharacterId(result.character) ?? matchCharacterId(result.title);
+  if (!id) return null;
+  const haystack = `${result.title} ${result.character} ${result.note}`.toLowerCase();
+  const variant: Variant = /horror|scary|infected|corrupt/.test(haystack)
+    ? "horror"
+    : "normal";
+  const phase = /phase\s*\d/i.test(result.phase) ? result.phase : null;
+  return { key: entryKey(id, variant), phase };
 }
 
 export default function AppShell({ email }: { email: string }) {
@@ -71,11 +84,8 @@ export default function AppShell({ email }: { email: string }) {
   }
 
   function want(result: FinderResult) {
-    const id = matchCharacterId(result.character) ?? matchCharacterId(result.title);
-    if (id) {
-      const phase = /phase\s*\d/i.test(result.phase) ? result.phase : null;
-      setStatus(id, "wanted", phase);
-    }
+    const entry = resultToEntry(result);
+    if (entry) setStatus(entry.key, "wanted", entry.phase);
   }
 
   async function signOut() {
@@ -148,14 +158,15 @@ export default function AppShell({ email }: { email: string }) {
                   {response.results.length > 0 && (
                     <div className="grid gap-3 sm:grid-cols-2">
                       {response.results.map((r, i) => {
-                        const id =
-                          matchCharacterId(r.character) ?? matchCharacterId(r.title);
-                        const wanted = id ? collection[id]?.status === "wanted" : false;
+                        const entry = resultToEntry(r);
+                        const wanted = entry
+                          ? collection[entry.key]?.status === "wanted"
+                          : false;
                         return (
                           <ResultCard
                             key={`${r.url}-${i}`}
                             result={r}
-                            onWant={id ? () => want(r) : undefined}
+                            onWant={entry ? () => want(r) : undefined}
                             wanted={wanted}
                           />
                         );

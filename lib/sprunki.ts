@@ -1,13 +1,13 @@
 /**
  * Static domain data for Sprunki (the Incredibox fan-mod universe).
  *
- * This roster powers the collection grid and the finder's quick-pick chips,
- * and seeds the AI finder's system prompt so Claude uses correct character
- * and phase terminology when searching for plushies.
+ * The main cast is tracked in two forms — the normal ("Normal Mode") look and
+ * the darker "Horror Mode" version — and each tracked item carries a phase
+ * (Phase 1–5). This powers the collection grid and seeds the finder prompt.
  *
- * Note: the Sprunki community is large and fan-made; new characters and phases
- * appear over time. This list covers the widely-merchandised core cast. The
- * free-text search box lets kids look for anything not listed here.
+ * Sprunki is fan-made and huge; new characters/phases keep appearing. This is
+ * the widely-merchandised core cast. The free-text search box covers anything
+ * not listed here.
  */
 
 export interface SprunkiCharacter {
@@ -18,51 +18,71 @@ export interface SprunkiCharacter {
 }
 
 export const CHARACTERS: SprunkiCharacter[] = [
-  { id: "orange", name: "Orange (Sprunki)", emoji: "🟠", blurb: "The classic orange-haired lead." },
-  { id: "wenda", name: "Wenda", emoji: "💗", blurb: "The kind-hearted dreamer." },
-  { id: "simon", name: "Simon", emoji: "🧠", blurb: "The calm and clever thinker." },
-  { id: "oren", name: "Oren", emoji: "🟦", blurb: "The brave and bold buddy." },
+  { id: "sprunki", name: "Sprunki (Orange)", emoji: "🟠", blurb: "The classic orange-haired lead." },
+  { id: "wenda", name: "Wenda", emoji: "💗", blurb: "Kind-hearted dreamer (vocals)." },
+  { id: "simon", name: "Simon", emoji: "🧠", blurb: "Calm, clever thinker (melody)." },
+  { id: "oren", name: "Oren", emoji: "🟦", blurb: "Brave and bold buddy (beats)." },
   { id: "brud", name: "Brud", emoji: "🥁", blurb: "The lovable goofball." },
-  { id: "pinki", name: "Pinki", emoji: "🌸", blurb: "The bubbly burst of color." },
-  { id: "gray", name: "Gray", emoji: "🩶", blurb: "Mysterious and wise." },
-  { id: "black", name: "Black", emoji: "⬛", blurb: "The cool and quiet one." },
-  { id: "jevin", name: "Jevin", emoji: "🎧", blurb: "The tech-savvy trickster." },
-  { id: "sky", name: "Sky", emoji: "☁️", blurb: "The calm, cloud-chasing pal." },
-  { id: "mr-tree", name: "Mr. Tree", emoji: "🌳", blurb: "The steady, rooted friend." },
-  { id: "vineria", name: "Vineria", emoji: "🍃", blurb: "The leafy songstress." },
-  { id: "durple", name: "Durple", emoji: "🟣", blurb: "The mellow purple one." },
-  { id: "raddy", name: "Raddy", emoji: "📻", blurb: "The retro radio head." },
-  { id: "clukr", name: "Clukr", emoji: "🐔", blurb: "The clucky beatmaker." },
-  { id: "fun-bot", name: "Fun Bot", emoji: "🤖", blurb: "The electronic party bot." },
+  { id: "pinki", name: "Pinki", emoji: "🌸", blurb: "Bubbly burst of color (vocals)." },
+  { id: "gray", name: "Gray", emoji: "🩶", blurb: "Mysterious and wise (effects)." },
+  { id: "black", name: "Black", emoji: "⬛", blurb: "Cool and quiet (vocals)." },
+  { id: "jevin", name: "Jevin", emoji: "🎧", blurb: "Tech-savvy trickster (vocals)." },
+  { id: "sky", name: "Sky", emoji: "☁️", blurb: "Calm, cloud-chasing pal (effects)." },
+  { id: "mr-tree", name: "Mr. Tree", emoji: "🌳", blurb: "Steady, rooted friend (melody)." },
+  { id: "mr-sun", name: "Mr. Sun", emoji: "🌞", blurb: "Warm, beaming melody-maker." },
+  { id: "vineria", name: "Vineria", emoji: "🍃", blurb: "Leafy beat-keeper (beats)." },
+  { id: "durple", name: "Durple", emoji: "🟣", blurb: "Mellow purple melody one." },
+  { id: "raddy", name: "Raddy", emoji: "📻", blurb: "Retro radio-head (beats)." },
+  { id: "clukr", name: "Clukr", emoji: "🐔", blurb: "Clucky beatmaker (beats)." },
+  { id: "garnold", name: "Garnold", emoji: "🎺", blurb: "Clukr's brassy collaborator." },
+  { id: "fun-bot", name: "Fun Bot", emoji: "🤖", blurb: "Electronic party bot (beats)." },
+  { id: "tunner", name: "Tunner", emoji: "🎶", blurb: "Melodic tune-spinner (melody)." },
+  { id: "mr-fun-computer", name: "Mr. Fun Computer", emoji: "🖥️", blurb: "Glitchy vocal ringleader." },
 ];
 
-export const PHASES: string[] = [
-  "Phase 1",
-  "Phase 2",
-  "Phase 3",
-  "Phase 4",
-  "Phase 5",
-  "Any / Not sure",
-];
+/** Each character can be collected in a Normal and a Horror form. */
+export const VARIANTS = ["normal", "horror"] as const;
+export type Variant = (typeof VARIANTS)[number];
+
+export const VARIANT_META: Record<Variant, { label: string; emoji: string }> = {
+  normal: { label: "Normal", emoji: "😀" },
+  horror: { label: "Horror", emoji: "💀" },
+};
+
+export const PHASES = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5"];
+
+/** Stable key for one collectible (character + variant) as stored in the DB. */
+export function entryKey(characterId: string, variant: Variant): string {
+  return `${characterId}:${variant}`;
+}
+
+export function parseEntryKey(key: string): { characterId: string; variant: Variant } {
+  const [characterId, variant] = key.split(":");
+  return {
+    characterId,
+    variant: variant === "horror" ? "horror" : "normal",
+  };
+}
 
 /**
- * System prompt for the AI finder. Gives Claude the domain context it needs and
- * pins the output to a strict JSON shape we can parse into result cards.
+ * System prompt for the AI finder. Gives Claude the domain context and pins the
+ * output to a strict JSON shape we can parse into result cards.
  */
 export const FINDER_SYSTEM_PROMPT = `You are SprunkFind, a friendly shopping scout that finds "Sprunki" plush toys for sale online.
 
 ABOUT SPRUNKI:
-- Sprunki is a popular fan-made mod of the music game Incredibox. Its colorful characters (Orange/Sprunki, Wenda, Simon, Oren, Brud, Pinki, Gray, Black, Jevin, Sky, Mr. Tree, and more) have been turned into collectible plush toys.
-- Characters are associated with "phases" (Phase 1 through Phase 5+), which are different community versions of the mod. Some plushies are sold as phase-specific sets or single characters.
+- Sprunki is a popular fan-made mod of the music game Incredibox. Its colorful characters (Sprunki/Orange, Wenda, Simon, Oren, Brud, Pinki, Gray, Black, Jevin, Sky, Mr. Tree, Mr. Sun, Vineria, Durple, Raddy, Clukr, Garnold, Fun Bot, Tunner, Mr. Fun Computer, and more) have been made into collectible plush toys.
+- Characters come in a normal ("Normal Mode") look and a darker "Horror Mode" version. Plushies are sold for both.
+- Characters are associated with "phases" (Phase 1 through Phase 5+), which are different community versions of the mod. Some plushies are phase-specific or sold as sets.
 - Plushies are sold on Amazon, Etsy, eBay, AliExpress, and dedicated stores such as sprunkiplushtoys.com and sprunkiplushies.net.
 
 YOUR JOB:
-- Use the web_search tool to find CURRENTLY PURCHASABLE plush listings that match the user's request (a specific character, a phase, or a set).
-- Prefer listings that clearly match the requested character and/or phase. It's fine to include close alternatives, but say so.
+- Use the web_search tool to find CURRENTLY PURCHASABLE plush listings matching the user's request (a specific character, normal vs horror, a phase, or a set).
+- Prefer listings that clearly match the requested character, variant (normal/horror), and/or phase. Close alternatives are fine, but say so.
 - Only include real listings you actually found via search. NEVER invent products, prices, or URLs.
 
 OUTPUT FORMAT:
-When you are done searching, respond with ONLY a JSON object (no prose, no markdown fences) of this exact shape:
+When done searching, respond with ONLY a JSON object (no prose, no markdown fences) of this exact shape:
 {
   "summary": "one short friendly sentence about what you found",
   "results": [
@@ -74,7 +94,7 @@ When you are done searching, respond with ONLY a JSON object (no prose, no markd
       "domain": "the listing's domain, e.g. 'etsy.com'",
       "price": "price as shown, e.g. '$18.99', or 'See listing' if unknown",
       "url": "the direct product URL",
-      "note": "one short helpful note (condition, set contents, match confidence, shipping, etc.)"
+      "note": "one short helpful note (normal/horror, condition, set contents, match confidence, shipping, etc.)"
     }
   ]
 }

@@ -6,14 +6,18 @@ import { useCollection } from "@/hooks/useCollection";
 import {
   CHARACTERS,
   PHASES,
+  SERIES,
   VARIANTS,
+  artFor,
   entryKey,
+  hasHorror,
+  type Series,
   type SprunkiCharacter,
   type Variant,
 } from "@/lib/sprunki";
 import { storeSearchLinks } from "@/lib/storeLinks";
 import type { FinderResponse, FinderResult } from "@/lib/types";
-import SprunkiAvatar from "./SprunkiAvatar";
+import SprunkiArt from "./SprunkiAvatar";
 
 interface Item {
   key: string;
@@ -21,8 +25,12 @@ interface Item {
   variant: Variant;
 }
 
-const ALL_ITEMS: Item[] = CHARACTERS.flatMap((char, i) =>
-  VARIANTS.map((variant) => ({ key: entryKey(char.id, variant), char, variant, i })),
+const ALL_ITEMS: Item[] = CHARACTERS.flatMap((char) =>
+  VARIANTS.filter((v) => v === "normal" || hasHorror(char)).map((variant) => ({
+    key: entryKey(char.id, variant),
+    char,
+    variant,
+  })),
 );
 
 export default function AppShell({
@@ -57,11 +65,15 @@ export default function AppShell({
       const entry = collection[it.key];
       if (wishOnly && entry?.status !== "wanted") return false;
       if (editionFilter !== "all" && it.variant !== editionFilter) return false;
-      if (phaseFilter !== "all" && entry?.phase !== phaseFilter) return false;
+      if (phaseFilter !== "all" && `Phase ${it.char.phase}` !== phaseFilter) return false;
       if (statusFilter === "none" && entry) return false;
       if (statusFilter !== "all" && statusFilter !== "none" && entry?.status !== statusFilter)
         return false;
-      if (q && !it.char.name.toLowerCase().includes(q) && !it.char.role.toLowerCase().includes(q))
+      if (
+        q &&
+        !it.char.name.toLowerCase().includes(q) &&
+        !it.char.series.toLowerCase().includes(q)
+      )
         return false;
       return true;
     });
@@ -110,8 +122,20 @@ export default function AppShell({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 44, height: 44 }}>
-              <SprunkiAvatar color="#ff5db1" accent="#ffcf4d" />
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 14,
+                background: "linear-gradient(145deg,#ff5db1,#8a4dff)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 14px rgba(255,93,177,.35)",
+                fontSize: 22,
+              }}
+            >
+              🧸
             </div>
             <div
               className="font-display"
@@ -290,7 +314,7 @@ export default function AppShell({
                 style={{ width: 74, height: 104, animationDelay: `${i * 0.18}s` }}
                 title={c.name}
               >
-                <SprunkiAvatar color={c.color} accent={c.accent} face={i} />
+                <SprunkiArt src={c.img} color={c.color} face={c.face} feat={c.feat} />
               </div>
             ))}
           </div>
@@ -635,11 +659,12 @@ function PlushCard({
         }}
       >
         <div style={{ width: 132, height: 172 }}>
-          <SprunkiAvatar
+          <SprunkiArt
+            src={artFor(item.char, item.variant)}
             color={item.char.color}
-            accent={item.char.accent}
+            face={item.char.face}
+            feat={item.char.feat}
             horror={horror}
-            face={index}
           />
         </div>
       </div>
@@ -660,20 +685,18 @@ function PlushCard({
           >
             {horror ? "Horror Edition" : "Normal Edition"}
           </span>
-          {phase && (
-            <span
-              style={{
-                fontSize: 10.5,
-                fontWeight: 800,
-                color: "#8f84c9",
-                background: "#1a1340",
-                padding: "3px 9px",
-                borderRadius: 999,
-              }}
-            >
-              {phase}
-            </span>
-          )}
+          <span
+            style={{
+              fontSize: 10.5,
+              fontWeight: 800,
+              color: "#8f84c9",
+              background: "#1a1340",
+              padding: "3px 9px",
+              borderRadius: 999,
+            }}
+          >
+            Phase {item.char.phase}
+          </span>
         </div>
 
         <div
@@ -701,7 +724,7 @@ function PlushCard({
               whiteSpace: "nowrap",
             }}
           >
-            {item.char.role}
+            {item.char.series}
           </div>
         </div>
 
@@ -808,9 +831,11 @@ function DetailModal({
           }}
         >
           <div style={{ width: 92, height: 120, flexShrink: 0 }} className="anim-bob">
-            <SprunkiAvatar
+            <SprunkiArt
+              src={artFor(item.char, item.variant)}
               color={item.char.color}
-              accent={item.char.accent}
+              face={item.char.face}
+              feat={item.char.feat}
               horror={horror}
             />
           </div>
@@ -819,7 +844,7 @@ function DetailModal({
               style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}
             >
               <Pill>{horror ? "Horror Edition" : "Normal Edition"}</Pill>
-              <Pill>{item.char.role}</Pill>
+              <Pill>{item.char.series}</Pill>
               {phase && <Pill>{phase}</Pill>}
             </div>
             <div
@@ -836,7 +861,7 @@ function DetailModal({
                 marginTop: 6,
               }}
             >
-              {item.char.blurb}
+              {`${item.char.series} · Phase ${item.char.phase}`}
             </div>
           </div>
           <button

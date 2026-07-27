@@ -1,95 +1,131 @@
 /**
- * Static domain data for Sprunki (the Incredibox fan-mod universe).
+ * Sprunki roster — mirrors the character data from the Claude design.
  *
- * The main cast is tracked in two forms — the normal ("Normal Mode") look and
- * the darker "Horror Mode" version — and each tracked item carries a phase
- * (Phase 1–5). This powers the collection grid and seeds the finder prompt.
- *
- * Sprunki is fan-made and huge; new characters/phases keep appearing. This is
- * the widely-merchandised core cast. The free-text search box covers anything
- * not listed here.
+ * Art comes from the Incredibox Sprunki Fandom wiki: each character has a
+ * normal SVG and (for the main cast) a "spoopy" Horror Mode SVG. A stylised
+ * SVG fallback renders underneath in case an image fails to load.
  */
 
-export type Role = "Beats" | "Melody" | "Vocals" | "Effects";
+const IMG = "https://static.wikia.nocookie.net/incredibox-sprunki/images/";
+const FP = "https://incredibox-sprunki.fandom.com/wiki/Special:Filepath/";
+
+export type Series = "Beats" | "Effects" | "Melodies" | "Voices" | "Bonus";
+export type Feature = "horns" | "antenna" | "cap" | "head" | "none";
 
 export interface SprunkiCharacter {
   id: string;
   name: string;
-  emoji: string;
-  blurb: string;
-  /** Body colour used by the card art. */
+  series: Series;
+  phase: number;
   color: string;
-  /** Hair/crown accent colour. */
-  accent: string;
-  role: Role;
+  /** Normal-edition art URL. */
+  img: string;
+  /** Horror ("spoopy") art URL — empty when the character has no horror form. */
+  horrorImg: string;
+  face: number;
+  feat: Feature;
 }
 
-export const CHARACTERS: SprunkiCharacter[] = [
-  { id: "sprunki", name: "Sprunki", emoji: "🟠", blurb: "The classic orange-haired lead.", color: "#ff8a3d", accent: "#ffcf4d", role: "Vocals" },
-  { id: "wenda", name: "Wenda", emoji: "💗", blurb: "Kind-hearted dreamer.", color: "#ff5db1", accent: "#ffd1ea", role: "Vocals" },
-  { id: "simon", name: "Simon", emoji: "🧠", blurb: "Calm, clever thinker.", color: "#5b8dff", accent: "#c9dbff", role: "Melody" },
-  { id: "oren", name: "Oren", emoji: "🟦", blurb: "Brave and bold buddy.", color: "#2ee0ff", accent: "#0f8fb0", role: "Beats" },
-  { id: "brud", name: "Brud", emoji: "🥁", blurb: "The lovable goofball.", color: "#8b5cff", accent: "#d9c8ff", role: "Beats" },
-  { id: "pinki", name: "Pinki", emoji: "🌸", blurb: "Bubbly burst of colour.", color: "#ff6f8e", accent: "#ffe0e6", role: "Vocals" },
-  { id: "gray", name: "Gray", emoji: "🩶", blurb: "Mysterious and wise.", color: "#9aa0b5", accent: "#d7dbe6", role: "Effects" },
-  { id: "black", name: "Black", emoji: "⬛", blurb: "Cool and quiet.", color: "#3a3550", accent: "#6b6294", role: "Vocals" },
-  { id: "jevin", name: "Jevin", emoji: "🎧", blurb: "Tech-savvy trickster.", color: "#3ff0a0", accent: "#0f7a52", role: "Vocals" },
-  { id: "sky", name: "Sky", emoji: "☁️", blurb: "Calm, cloud-chasing pal.", color: "#7fecff", accent: "#ffffff", role: "Effects" },
-  { id: "mr-tree", name: "Mr. Tree", emoji: "🌳", blurb: "Steady, rooted friend.", color: "#4caf6d", accent: "#8d5a3b", role: "Melody" },
-  { id: "mr-sun", name: "Mr. Sun", emoji: "🌞", blurb: "Warm, beaming melody-maker.", color: "#ffcf4d", accent: "#ff9d2e", role: "Melody" },
-  { id: "vineria", name: "Vineria", emoji: "🍃", blurb: "Leafy beat-keeper.", color: "#7bc86c", accent: "#3f8f4f", role: "Beats" },
-  { id: "durple", name: "Durple", emoji: "🟣", blurb: "Mellow purple melody one.", color: "#a06bff", accent: "#e0ccff", role: "Melody" },
-  { id: "raddy", name: "Raddy", emoji: "📻", blurb: "Retro radio-head.", color: "#ff5f5f", accent: "#ffc0c0", role: "Beats" },
-  { id: "clukr", name: "Clukr", emoji: "🐔", blurb: "Clucky beatmaker.", color: "#f2f0e6", accent: "#ff8a3d", role: "Beats" },
-  { id: "garnold", name: "Garnold", emoji: "🎺", blurb: "Clukr's brassy collaborator.", color: "#d9a441", accent: "#8a5b1d", role: "Beats" },
-  { id: "fun-bot", name: "Fun Bot", emoji: "🤖", blurb: "Electronic party bot.", color: "#6de3d1", accent: "#2b8f86", role: "Beats" },
-  { id: "tunner", name: "Tunner", emoji: "🎶", blurb: "Melodic tune-spinner.", color: "#ff9ecb", accent: "#8b5cff", role: "Melody" },
-  { id: "mr-fun-computer", name: "Mr. Fun Computer", emoji: "🖥️", blurb: "Glitchy vocal ringleader.", color: "#4de1a0", accent: "#123b2c", role: "Vocals" },
+interface Raw {
+  name: string;
+  series: Series;
+  phase: number;
+  color: string;
+  img?: string;
+  iurl?: string;
+  hurl?: string;
+  face: number;
+  feat: Feature;
+}
+
+const RAW: Raw[] = [
+  // Beats
+  { name: "Oren", series: "Beats", phase: 1, color: "#ff8a3d", img: "3/3c/Orensvg.svg", hurl: FP + "Orenspoopysvg.svg", face: 0, feat: "horns" },
+  { name: "Raddy", series: "Beats", phase: 1, color: "#ff4d4d", img: "a/a2/Raddysvg.svg", hurl: FP + "Raddyspoopysvg.svg", face: 2, feat: "horns" },
+  { name: "Clukr", series: "Beats", phase: 1, color: "#b8c0d0", img: "b/bb/Clukersvg.svg", hurl: FP + "Clukerspoopysvg.svg", face: 1, feat: "none" },
+  { name: "Fun Bot", series: "Beats", phase: 2, color: "#ffce3d", img: "0/04/Funbotsvg.svg", hurl: FP + "Funbotspoopysvg.svg", face: 4, feat: "antenna" },
+  { name: "Vineria", series: "Beats", phase: 2, color: "#4fe08a", img: "0/0e/Vinerasvg.svg", hurl: FP + "Vineraspoopysvg.svg", face: 0, feat: "none" },
+  // Effects
+  { name: "Gray", series: "Effects", phase: 2, color: "#9aa4c4", img: "9/96/Graysvg.svg", hurl: FP + "Grayspoopysvg.svg", face: 3, feat: "none" },
+  { name: "Brud", series: "Effects", phase: 2, color: "#8a5a3c", img: "d/d9/Brudsvg.svg", hurl: FP + "Brudspoopysvg.svg", face: 1, feat: "head" },
+  { name: "Garnold", series: "Effects", phase: 2, color: "#ffb43d", img: "0/0c/Garnoldsvg.svg", hurl: FP + "Garnoldspoopysvg.svg", face: 2, feat: "head" },
+  { name: "OWAKCX", series: "Effects", phase: 3, color: "#9ee23d", img: "9/9b/Limesvg.svg", hurl: FP + "Limespoopysvg.svg", face: 0, feat: "horns" },
+  { name: "Sky", series: "Effects", phase: 3, color: "#59c6ff", img: "8/8b/Sky.svg", hurl: FP + "Skyspoopysvg.svg", face: 0, feat: "none" },
+  // Melodies
+  { name: "Mr. Sun", series: "Melodies", phase: 3, color: "#ffd23d", img: "e/ef/Mrsunsvg.svg", hurl: FP + "Mrsunspoopysvg.svg", face: 0, feat: "none" },
+  { name: "Durple", series: "Melodies", phase: 3, color: "#8a4dff", img: "f/ff/Durplesvg.svg", hurl: FP + "Durplespoopysvg.svg", face: 2, feat: "horns" },
+  { name: "Mr. Tree", series: "Melodies", phase: 4, color: "#3ecb5a", img: "a/a8/Mrtreesvg.svg", hurl: FP + "Mrtreespoopysvg.svg", face: 3, feat: "none" },
+  { name: "Simon", series: "Melodies", phase: 4, color: "#cfe23d", img: "6/62/Simonsvg.svg", hurl: FP + "Simonspoopysvg.svg", face: 4, feat: "antenna" },
+  { name: "Tunner", series: "Melodies", phase: 4, color: "#d8b483", img: "c/cb/Tunnersvg.svg", hurl: FP + "Tunnerspoopysvg.svg", face: 3, feat: "cap" },
+  // Voices
+  { name: "Mr. Fun Computer", series: "Voices", phase: 4, color: "#8a90b0", img: "4/47/Funcomputersvg.svg", hurl: "", face: 2, feat: "cap" },
+  { name: "Wenda", series: "Voices", phase: 5, color: "#e8e8f0", img: "d/d2/Wendasvg.svg", hurl: FP + "Wendaspoopysvg.svg", face: 1, feat: "horns" },
+  { name: "Pinki", series: "Voices", phase: 5, color: "#ff8ad0", img: "5/54/Pinki.svg", hurl: FP + "Pinkispoopysvg.svg", face: 1, feat: "none" },
+  { name: "Jevin", series: "Voices", phase: 5, color: "#3d6bff", img: "7/70/Jevinsvg.svg", hurl: FP + "Jevinspoopysvg.svg", face: 0, feat: "none" },
+  { name: "Black", series: "Voices", phase: 5, color: "#2a2a3a", img: "d/d5/Blacksvg.svg", hurl: FP + "Blackspoopysvg.svg", face: 3, feat: "none" },
+  // Bonus (no horror edition)
+  { name: "Rebel", series: "Bonus", phase: 3, color: "#6fae3d", iurl: FP + "Rebel.svg", hurl: "", face: 2, feat: "cap" },
+  { name: "Lario", series: "Bonus", phase: 4, color: "#e0403a", iurl: FP + "Lariosvg.svg", hurl: "", face: 1, feat: "cap" },
+  { name: "Rose", series: "Bonus", phase: 4, color: "#e0517a", iurl: FP + "Rose.svg", hurl: "", face: 0, feat: "none" },
+  { name: "Moss", series: "Bonus", phase: 5, color: "#6a8f4a", iurl: FP + "Mosssvg.svg", hurl: "", face: 0, feat: "horns" },
+  { name: "Locke", series: "Bonus", phase: 5, color: "#3f8f8a", iurl: FP + "Locke.svg", hurl: "", face: 3, feat: "antenna" },
 ];
 
-/** Each character can be collected in a Normal and a Horror form. */
+export const CHARACTERS: SprunkiCharacter[] = RAW.map((r) => {
+  const img = r.iurl || IMG + r.img + "/revision/latest";
+  return {
+    id: r.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    name: r.name,
+    series: r.series,
+    phase: r.phase,
+    color: r.color,
+    img,
+    horrorImg: r.hurl || "",
+    face: r.face,
+    feat: r.feat,
+  };
+});
+
+/** Editions a character can be collected in. Bonus characters are Normal-only. */
 export const VARIANTS = ["normal", "horror"] as const;
 export type Variant = (typeof VARIANTS)[number];
 
-export const VARIANT_META: Record<Variant, { label: string; emoji: string }> = {
-  normal: { label: "Normal", emoji: "😀" },
-  horror: { label: "Horror", emoji: "💀" },
-};
+export function hasHorror(c: SprunkiCharacter): boolean {
+  return c.series !== "Bonus";
+}
 
+export function artFor(c: SprunkiCharacter, variant: Variant): string {
+  return variant === "horror" ? c.horrorImg || c.img : c.img;
+}
+
+export const SERIES: Series[] = ["Beats", "Effects", "Melodies", "Voices", "Bonus"];
 export const PHASES = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5"];
 
-/** Stable key for one collectible (character + variant) as stored in the DB. */
+/** Stable key for one collectible (character + edition). */
 export function entryKey(characterId: string, variant: Variant): string {
   return `${characterId}:${variant}`;
 }
 
 export function parseEntryKey(key: string): { characterId: string; variant: Variant } {
   const [characterId, variant] = key.split(":");
-  return {
-    characterId,
-    variant: variant === "horror" ? "horror" : "normal",
-  };
+  return { characterId, variant: variant === "horror" ? "horror" : "normal" };
 }
 
-/**
- * System prompt for the AI finder. Gives Claude the domain context and pins the
- * output to a strict JSON shape we can parse into result cards.
- */
+/** System prompt for the optional AI finder. */
 export const FINDER_SYSTEM_PROMPT = `You are SprunkFind, a friendly shopping scout that finds "Sprunki" plush toys for sale online.
 
 ABOUT SPRUNKI:
-- Sprunki is a popular fan-made mod of the music game Incredibox. Its colorful characters (Sprunki/Orange, Wenda, Simon, Oren, Brud, Pinki, Gray, Black, Jevin, Sky, Mr. Tree, Mr. Sun, Vineria, Durple, Raddy, Clukr, Garnold, Fun Bot, Tunner, Mr. Fun Computer, and more) have been made into collectible plush toys.
-- Characters come in a normal ("Normal Mode") look and a darker "Horror Mode" version. Plushies are sold for both.
-- Characters are associated with "phases" (Phase 1 through Phase 5+), which are different community versions of the mod. Some plushies are phase-specific or sold as sets.
-- Plushies are sold on Amazon, Etsy, eBay, AliExpress, and dedicated stores such as sprunkiplushtoys.com and sprunkiplushies.net.
+- Sprunki is a popular fan-made mod of the music game Incredibox. Characters include Oren, Raddy, Clukr, Fun Bot, Vineria, Gray, Brud, Garnold, OWAKCX, Sky, Mr. Sun, Durple, Mr. Tree, Simon, Tunner, Mr. Fun Computer, Wenda, Pinki, Jevin, Black, plus bonus characters (Rebel, Lario, Rose, Moss, Locke).
+- Characters belong to groups: Beats, Effects, Melodies, Voices, and Bonus, and appear across Phases 1-5.
+- Most characters have a normal look and a darker "Horror Mode" (a.k.a. "spoopy") version. Plushies are sold for both.
+- Plushies are sold on Etsy, Amazon, eBay, AliExpress, Makeship, Youtooz, Hot Topic, and dedicated Sprunki stores.
 
 YOUR JOB:
-- Use the web_search tool to find CURRENTLY PURCHASABLE plush listings matching the user's request (a specific character, normal vs horror, a phase, or a set).
-- Prefer listings that clearly match the requested character, variant (normal/horror), and/or phase. Close alternatives are fine, but say so.
+- Use the web_search tool to find CURRENTLY PURCHASABLE plush listings matching the user's request (a character, normal vs horror, a phase, or a set).
 - Only include real listings you actually found via search. NEVER invent products, prices, or URLs.
 
 OUTPUT FORMAT:
-When done searching, respond with ONLY a JSON object (no prose, no markdown fences) of this exact shape:
+Respond with ONLY a JSON object (no prose, no markdown fences):
 {
   "summary": "one short friendly sentence about what you found",
   "results": [
@@ -97,12 +133,12 @@ When done searching, respond with ONLY a JSON object (no prose, no markdown fenc
       "title": "the product/listing title",
       "character": "best-guess character name or 'Set' or 'Unknown'",
       "phase": "e.g. 'Phase 5' or 'Unknown'",
-      "store": "human store name, e.g. 'Etsy' or 'Amazon'",
+      "store": "human store name, e.g. 'Etsy'",
       "domain": "the listing's domain, e.g. 'etsy.com'",
-      "price": "price as shown, e.g. '$18.99', or 'See listing' if unknown",
+      "price": "price as shown, e.g. '$18.99', or 'See listing'",
       "url": "the direct product URL",
-      "note": "one short helpful note (normal/horror, condition, set contents, match confidence, shipping, etc.)"
+      "note": "one short helpful note (normal/horror, set contents, match confidence)"
     }
   ]
 }
-Return between 1 and 8 results, best matches first. If you truly found nothing purchasable, return an empty "results" array and a helpful "summary" suggesting how to rephrase.`;
+Return 1-8 results, best matches first. If nothing purchasable was found, return an empty "results" array and a helpful "summary".`;

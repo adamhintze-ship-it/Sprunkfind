@@ -10,34 +10,41 @@
  * not listed here.
  */
 
+export type Role = "Beats" | "Melody" | "Vocals" | "Effects";
+
 export interface SprunkiCharacter {
   id: string;
   name: string;
   emoji: string;
   blurb: string;
+  /** Body colour used by the card art. */
+  color: string;
+  /** Hair/crown accent colour. */
+  accent: string;
+  role: Role;
 }
 
 export const CHARACTERS: SprunkiCharacter[] = [
-  { id: "sprunki", name: "Sprunki (Orange)", emoji: "🟠", blurb: "The classic orange-haired lead." },
-  { id: "wenda", name: "Wenda", emoji: "💗", blurb: "Kind-hearted dreamer (vocals)." },
-  { id: "simon", name: "Simon", emoji: "🧠", blurb: "Calm, clever thinker (melody)." },
-  { id: "oren", name: "Oren", emoji: "🟦", blurb: "Brave and bold buddy (beats)." },
-  { id: "brud", name: "Brud", emoji: "🥁", blurb: "The lovable goofball." },
-  { id: "pinki", name: "Pinki", emoji: "🌸", blurb: "Bubbly burst of color (vocals)." },
-  { id: "gray", name: "Gray", emoji: "🩶", blurb: "Mysterious and wise (effects)." },
-  { id: "black", name: "Black", emoji: "⬛", blurb: "Cool and quiet (vocals)." },
-  { id: "jevin", name: "Jevin", emoji: "🎧", blurb: "Tech-savvy trickster (vocals)." },
-  { id: "sky", name: "Sky", emoji: "☁️", blurb: "Calm, cloud-chasing pal (effects)." },
-  { id: "mr-tree", name: "Mr. Tree", emoji: "🌳", blurb: "Steady, rooted friend (melody)." },
-  { id: "mr-sun", name: "Mr. Sun", emoji: "🌞", blurb: "Warm, beaming melody-maker." },
-  { id: "vineria", name: "Vineria", emoji: "🍃", blurb: "Leafy beat-keeper (beats)." },
-  { id: "durple", name: "Durple", emoji: "🟣", blurb: "Mellow purple melody one." },
-  { id: "raddy", name: "Raddy", emoji: "📻", blurb: "Retro radio-head (beats)." },
-  { id: "clukr", name: "Clukr", emoji: "🐔", blurb: "Clucky beatmaker (beats)." },
-  { id: "garnold", name: "Garnold", emoji: "🎺", blurb: "Clukr's brassy collaborator." },
-  { id: "fun-bot", name: "Fun Bot", emoji: "🤖", blurb: "Electronic party bot (beats)." },
-  { id: "tunner", name: "Tunner", emoji: "🎶", blurb: "Melodic tune-spinner (melody)." },
-  { id: "mr-fun-computer", name: "Mr. Fun Computer", emoji: "🖥️", blurb: "Glitchy vocal ringleader." },
+  { id: "sprunki", name: "Sprunki", emoji: "🟠", blurb: "The classic orange-haired lead.", color: "#ff8a3d", accent: "#ffcf4d", role: "Vocals" },
+  { id: "wenda", name: "Wenda", emoji: "💗", blurb: "Kind-hearted dreamer.", color: "#ff5db1", accent: "#ffd1ea", role: "Vocals" },
+  { id: "simon", name: "Simon", emoji: "🧠", blurb: "Calm, clever thinker.", color: "#5b8dff", accent: "#c9dbff", role: "Melody" },
+  { id: "oren", name: "Oren", emoji: "🟦", blurb: "Brave and bold buddy.", color: "#2ee0ff", accent: "#0f8fb0", role: "Beats" },
+  { id: "brud", name: "Brud", emoji: "🥁", blurb: "The lovable goofball.", color: "#8b5cff", accent: "#d9c8ff", role: "Beats" },
+  { id: "pinki", name: "Pinki", emoji: "🌸", blurb: "Bubbly burst of colour.", color: "#ff6f8e", accent: "#ffe0e6", role: "Vocals" },
+  { id: "gray", name: "Gray", emoji: "🩶", blurb: "Mysterious and wise.", color: "#9aa0b5", accent: "#d7dbe6", role: "Effects" },
+  { id: "black", name: "Black", emoji: "⬛", blurb: "Cool and quiet.", color: "#3a3550", accent: "#6b6294", role: "Vocals" },
+  { id: "jevin", name: "Jevin", emoji: "🎧", blurb: "Tech-savvy trickster.", color: "#3ff0a0", accent: "#0f7a52", role: "Vocals" },
+  { id: "sky", name: "Sky", emoji: "☁️", blurb: "Calm, cloud-chasing pal.", color: "#7fecff", accent: "#ffffff", role: "Effects" },
+  { id: "mr-tree", name: "Mr. Tree", emoji: "🌳", blurb: "Steady, rooted friend.", color: "#4caf6d", accent: "#8d5a3b", role: "Melody" },
+  { id: "mr-sun", name: "Mr. Sun", emoji: "🌞", blurb: "Warm, beaming melody-maker.", color: "#ffcf4d", accent: "#ff9d2e", role: "Melody" },
+  { id: "vineria", name: "Vineria", emoji: "🍃", blurb: "Leafy beat-keeper.", color: "#7bc86c", accent: "#3f8f4f", role: "Beats" },
+  { id: "durple", name: "Durple", emoji: "🟣", blurb: "Mellow purple melody one.", color: "#a06bff", accent: "#e0ccff", role: "Melody" },
+  { id: "raddy", name: "Raddy", emoji: "📻", blurb: "Retro radio-head.", color: "#ff5f5f", accent: "#ffc0c0", role: "Beats" },
+  { id: "clukr", name: "Clukr", emoji: "🐔", blurb: "Clucky beatmaker.", color: "#f2f0e6", accent: "#ff8a3d", role: "Beats" },
+  { id: "garnold", name: "Garnold", emoji: "🎺", blurb: "Clukr's brassy collaborator.", color: "#d9a441", accent: "#8a5b1d", role: "Beats" },
+  { id: "fun-bot", name: "Fun Bot", emoji: "🤖", blurb: "Electronic party bot.", color: "#6de3d1", accent: "#2b8f86", role: "Beats" },
+  { id: "tunner", name: "Tunner", emoji: "🎶", blurb: "Melodic tune-spinner.", color: "#ff9ecb", accent: "#8b5cff", role: "Melody" },
+  { id: "mr-fun-computer", name: "Mr. Fun Computer", emoji: "🖥️", blurb: "Glitchy vocal ringleader.", color: "#4de1a0", accent: "#123b2c", role: "Vocals" },
 ];
 
 /** Each character can be collected in a Normal and a Horror form. */

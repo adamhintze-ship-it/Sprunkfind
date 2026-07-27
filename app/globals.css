@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -8,15 +8,151 @@
   color-scheme: dark;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
 body {
-  background:
-    radial-gradient(1200px 600px at 15% -10%, rgba(255, 93, 177, 0.25), transparent),
-    radial-gradient(1000px 500px at 100% 0%, rgba(74, 217, 255, 0.2), transparent),
-    #0f0a1e;
-  min-height: 100dvh;
-  color: #f4f0ff;
+  background: #0a0718;
+  color: #f3efff;
+  font-family: "Nunito", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+a {
+  color: #ff7ac2;
+  text-decoration: none;
+}
+a:hover {
+  color: #ffa3d6;
+}
+
+input {
+  font-family: inherit;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+select {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0718;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2058;
+  border-radius: 8px;
+  border: 3px solid #0a0718;
+}
+::selection {
+  background: #ff5db1;
+  color: #160f2e;
 }
 
 .font-display {
-  font-family: "Baloo 2", system-ui, sans-serif;
+  font-family: "Fredoka", sans-serif;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1.5deg);
+  }
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -30px) scale(1.08);
+  }
+}
+@keyframes popin {
+  0% {
+    transform: scale(0.85) translateY(14px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes jitter {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  20% {
+    transform: translate(-2px, 1px) rotate(-3deg);
+  }
+  40% {
+    transform: translate(2px, -1px) rotate(3deg);
+  }
+  60% {
+    transform: translate(-1px, -2px) rotate(-2deg);
+  }
+  80% {
+    transform: translate(1px, 2px) rotate(2deg);
+  }
+}
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.anim-bob {
+  animation: bob 3.6s ease-in-out infinite;
+}
+.anim-popin {
+  animation: popin 0.4s ease both;
+}
+.card-hover {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-8px) rotate(-1deg);
+}
+.crew:hover {
+  animation: wiggle 0.5s ease-in-out infinite;
 }

@@ -1,32 +1,39 @@
 # SprunkFind 🧸🔎
 
-An AI-powered web app for finding **Sprunki** plush toys (the *Incredibox – Sprunki* fan-mod characters: Wenda, Simon, Oren, Brud, Pinki, and more) from any "phase," and tracking a personal collection that syncs across devices.
+A website for tracking **Sprunki** plush toys (the *Incredibox – Sprunki* characters: Oren, Wenda, Simon, Clukr, Durple, and the rest) and hunting down the ones you're missing.
 
-- **Finder** — type the plush you want ("Wenda Phase 5 plush") and get instant one-tap searches into Etsy, Amazon, eBay, AliExpress, and Google Shopping. **No API key required.** If you add an optional Anthropic key, Claude *also* returns AI-picked exact matches with prices.
-- **Collection** — mark each character as **owned** or **wanted**, saved to your account so it follows you across phone, tablet, and computer.
+- **Collection** — every character in **Normal** and **Horror** editions, across Phases 1–5, marked **owned** or **wanted**. Saved automatically, no login needed.
+- **Finder** — type any plush and get one-tap searches into Etsy, Amazon, eBay, AliExpress and Google Shopping. **No API key required.**
 
-Built with **Next.js (App Router)**, **Supabase** (accounts + Postgres), the **Anthropic API** (Claude with its server-side web-search tool), and **Tailwind CSS**. Deploys to **Vercel**.
+**Works with zero setup.** Sign-in (cross-device sync) and Claude-powered AI listings are optional extras you can switch on later.
+
+Built with **Next.js (App Router)** and **Tailwind CSS**; optional **Supabase** for accounts and the **Anthropic API** for AI search. Deploys to **Vercel**.
 
 ---
 
-## 🚀 One-click deploy
+## 🚀 One-click deploy (no setup, no accounts, no keys)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Your%20Supabase%20project%20URL%20and%20anon%20key%20(for%20accounts%20%2B%20collection%20sync)&envLink=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind%233-configure-environment&project-name=sprunkfind&repository-name=sprunkfind)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fadamhintze-ship-it%2FSprunkfind&project-name=sprunkfind&repository-name=sprunkfind)
 
-The button clones this repo to your Vercel account and prompts for just **two**
-values — your Supabase **Project URL** and **anon public key** (from *Project
-Settings → API* after you create a free project at <https://supabase.com/>).
+Tap the button, sign in to Vercel with GitHub, and hit **Deploy**. That's it —
+there is **nothing to configure**. You get a public link like
+`https://sprunkfind.vercel.app` you can send to anyone.
 
-The finder works with **no API key** (it opens store searches directly), so
-you don't need an Anthropic account to get started. After deploying, open
-**`/setup`** on your new site — it shows a live checklist and the one SQL
-snippet to paste into Supabase to finish.
+Out of the box you get the full character grid (Normal + Horror editions),
+collection tracking saved on the device, and one-tap store searches on Etsy,
+Amazon, eBay, AliExpress and Google Shopping.
 
-> **Optional AI upgrade:** to also get Claude's AI-picked matches, add an
-> `ANTHROPIC_API_KEY` (from <https://console.anthropic.com/>) in Vercel →
-> *Settings → Environment Variables* and redeploy.
+### Optional extras (add later, only if you want them)
 
-> Prefer running locally first? Jump to [Run locally](#4-run-locally).
+Both are added in Vercel under **Settings → Environment Variables**, then
+**Redeploy**. Neither is needed for the app to work.
+
+| Want | Add | Gets you |
+| --- | --- | --- |
+| AI-picked listings with prices | `ANTHROPIC_API_KEY` | Claude searches the web and returns exact matching plushies |
+| Collection synced across devices | `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sign-in, and the collection follows you phone → tablet → computer (also run `supabase/schema.sql`) |
+
+Visit `/setup` on your deployed site any time for a live checklist of what's on.
 
 ---
 
@@ -42,13 +49,18 @@ The `ANTHROPIC_API_KEY` lives only on the server (`app/api/find/route.ts`) and i
 
 ---
 
-## 1. Prerequisites
+## Running it locally
 
-- Node.js 18.18+ (or 20+)
-- A free [Supabase](https://supabase.com) project
-- An [Anthropic API key](https://console.anthropic.com/)
+```bash
+npm install
+npm run dev
+```
 
-## 2. Set up Supabase
+Open <http://localhost:3000>. Nothing else is required — no keys, no database.
+
+---
+
+## Optional: cross-device sync (Supabase)
 
 1. Create a new project at [supabase.com](https://supabase.com).
 2. In the dashboard, open **SQL Editor → New query**, paste the contents of [`supabase/schema.sql`](./supabase/schema.sql), and run it. This creates the `collections` table with Row-Level Security so each user can only read/write their own rows.
@@ -60,7 +72,7 @@ The `ANTHROPIC_API_KEY` lives only on the server (`app/api/find/route.ts`) and i
    Then set `NEXT_PUBLIC_GOOGLE_ENABLED=true` so the button appears.
 4. In **Project Settings → API**, copy the **Project URL** and the **anon public** key.
 
-## 3. Configure environment
+## Optional: environment variables
 
 Copy `.env.example` to `.env.local` and fill in:
 
@@ -80,25 +92,6 @@ NEXT_PUBLIC_GOOGLE_ENABLED=false
 
 > Not sure what's configured? Open **`/setup`** in the running app for a live checklist.
 
-## 4. Run locally
-
-```bash
-npm install
-npm run dev
-```
-
-Open <http://localhost:3000>. Create an account (or use Google), then try the Finder and Collection tabs.
-
----
-
-## Deploying to Vercel
-
-1. Push this repo to GitHub and import it at [vercel.com/new](https://vercel.com/new).
-2. Add the three environment variables (`ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`; optionally `FINDER_MODEL`) in **Project Settings → Environment Variables**.
-3. In Supabase **Authentication → URL Configuration**, add your Vercel URL (e.g. `https://sprunkfind.vercel.app`) to the **Site URL** / **Redirect URLs** so OAuth and email confirmations redirect back correctly.
-4. Deploy. That's it.
-
----
 
 ## Model & cost
 
@@ -118,13 +111,13 @@ You pay Anthropic per search based on tokens used; a typical plush search is a f
 
 | Path | Purpose |
 | --- | --- |
-| `app/api/find/route.ts` | Server route: Claude web-search finder (auth-gated) |
-| `app/page.tsx` | Protected app (Finder + Collection tabs) |
+| `app/api/find/route.ts` | Optional Claude web-search finder |
+| `app/page.tsx` | The site (character grid + finder) |
 | `app/login/page.tsx`, `components/AuthForm.tsx` | Sign in / sign up (email + Google) |
 | `app/auth/callback/route.ts` | OAuth / email-confirm callback |
-| `middleware.ts`, `lib/supabase/*` | Supabase session handling + route guard |
-| `hooks/useCollection.ts` | Collection state backed by the `collections` table |
-| `lib/sprunki.ts` | Character/phase roster + finder system prompt |
+| `middleware.ts`, `lib/supabase/*` | Optional Supabase session handling |
+| `hooks/useCollection.ts` | Collection state (device storage, or Supabase when signed in) |
+| `lib/sprunki.ts` | Character roster (series, phase, art) + finder prompt |
 | `supabase/schema.sql` | Database table + Row-Level Security policy |
 
 ---
